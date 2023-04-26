@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         val rv: RecyclerView = findViewById(R.id.rv)
         rv.layoutManager = LinearLayoutManager(this)
 
-        val jsonString = loadJsonFromAsset("movies.json")
+        val jsonString = loadJsonFromAsset("sample_mflix_movies.json")
         val movies: List<Movie> =
             Gson().fromJson(jsonString, object : TypeToken<List<Movie>>() {}.type)
 
@@ -57,8 +57,8 @@ class MovieAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<Movie
     // todo: use binding here to avoid name conflicts
     class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
-        val ratingTextView: TextView = itemView.findViewById(R.id.ratingTextView)
-        val votesTextView: TextView = itemView.findViewById(R.id.votesTextView)
+//        val ratingTextView: TextView = itemView.findViewById(R.id.ratingTextView)
+        val plotTextView: TextView = itemView.findViewById(R.id.plotTextView)
         val ratedTextView: TextView = itemView.findViewById(R.id.ratedTextView)
         val posterImageView: ImageView = itemView.findViewById(R.id.posterImageView)
     }
@@ -71,12 +71,17 @@ class MovieAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<Movie
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movie = movies[position]
         holder.titleTextView.text = movie.title
-        holder.ratingTextView.text = "Rating: ${movie.rating}"
-        holder.votesTextView.text = "Votes: ${movie.votes}"
+//        holder.ratingTextView.text = "Rating: ${movie.rating}"
+        holder.plotTextView.text = "${movie.plot}"
         holder.ratedTextView.text = "Rated: ${movie.rated ?: "N/A"}"
-        Glide.with(holder.itemView.context)
-            .load(movie.posterUrl)
-            .into(holder.posterImageView)
+        try {
+            Glide.with(holder.itemView.context)
+                .load(movie.posterUrl)
+                .into(holder.posterImageView)
+        } catch(e: Throwable) {
+            print(e)
+        }
+
     }
 
     override fun getItemCount() = movies.size
@@ -92,10 +97,8 @@ data class Movie(
     val actors: String,
     val plot: String,
     @SerializedName("poster")
-    val posterUrl: String?,
-    @SerializedName("imdbRating")
-    val rating: Double,
-    @SerializedName("imdbVotes")
-    val votes: String
+    val posterUrl: String?
+//    @SerializedName("imdbRating")
+//    val rating: Double
 )
 
